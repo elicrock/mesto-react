@@ -1,14 +1,18 @@
-function Card(props) {
-  // console.log(props);
+function Card({ card, onCardClick }) {
+
+  function handleClick() {
+    onCardClick(card);
+  }
+
   return (
     <li className="element">
       <button type="button" className="element__delete-btn"></button>
-      <img src={props.link} alt="" className="element__img" />
+      <img src={card.link} alt={`${card.name} (фото)`} className="element__img" onClick={handleClick} />
       <div className="element__caption">
-        <h2 className="element__title">{props.name}</h2>
+        <h2 className="element__title">{card.name}</h2>
         <div className="element__like">
           <button type="button" className="element__like-btn"></button>
-          <p className="element__likes-counter"></p>
+          <p className="element__likes-counter">{card.likes.length}</p>
         </div>
       </div>
     </li>

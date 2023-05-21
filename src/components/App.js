@@ -4,12 +4,14 @@ import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
 import PopupWithForm from "./PopupWithForm";
+import ImagePopup from "./ImagePopup";
 
 function App() {
 
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
+  const [selectedCard, setSelectedCard] = React.useState(null);
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -22,11 +24,16 @@ function App() {
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(true);
   }
+  
+  function handleCardClick(card) {
+    setSelectedCard(card);
+  }
 
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
+    setSelectedCard(null);
   }
 
   return (
@@ -38,12 +45,14 @@ function App() {
           onEditAvatar={handleEditAvatarClick}
           onEditProfile={handleEditProfileClick}
           onAddPlace={handleAddPlaceClick}
+          onCardClick={handleCardClick}
         />
         <Footer />
 
         <PopupWithForm
           title="Обновить аватар"
-          name="editAvatar"
+          name="avatar"
+          btnText="Сохранить"
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
         >
@@ -56,7 +65,8 @@ function App() {
 
         <PopupWithForm
           title="Редактировать профиль"
-          name="profileEdit"
+          name="profile"
+          btnText="Сохранить"
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
         >
@@ -74,7 +84,8 @@ function App() {
 
         <PopupWithForm
           title="Новое место"
-          name="addPlace"
+          name="place"
+          btnText="Создать"
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
         >
@@ -89,6 +100,8 @@ function App() {
             <span className="popup__input-error link-place-error"></span>
           </label>
         </PopupWithForm>
+
+        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
       </div>
     </>
