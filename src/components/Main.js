@@ -17,6 +17,9 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace, onCardClick }) {
         setUserAvatar(userData.avatar)
         setCards(cardsData);
       })
+      .catch(err => {
+        console.error(`Не удалось получить данные. ${err}`);
+      });
   }, [])
 
   return (
