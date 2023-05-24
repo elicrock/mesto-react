@@ -23,7 +23,7 @@ function App() {
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(true);
   }
-  
+
   function handleCardClick(card) {
     setSelectedCard(card);
   }
@@ -98,6 +98,8 @@ function App() {
           <span className="popup__input-error link-place-error"></span>
         </label>
       </PopupWithForm>
+
+      <PopupWithForm title="Вы уверены?" name="confirmation" btnText="Да" isOpen={false} onClose={closeAllPopups} />
 
       <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
