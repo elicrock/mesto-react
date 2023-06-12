@@ -3,7 +3,10 @@ import api from "../utils/api";
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
-import PopupWithForm from "./PopupWithForm";
+import EditProfilePopup from "./EditProfilePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
+import AddPlacePopup from "./AddPlacePopup";
+import ConfirmPopup from "./ConfirmPopup";
 import ImagePopup from "./ImagePopup";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
@@ -12,10 +15,12 @@ function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingAvatar, setIsLoadingAvatar] = useState(false);
 
   useEffect(() => {
     Promise.all([api.getInitialCards(), api.getUserInfo()])
@@ -38,6 +43,10 @@ function App() {
 
   function handleAddPlaceClick() {
     setIsAddPlacePopupOpen(true);
+  }
+
+  function handleConfirmClick(card) {
+    setIsConfirmPopupOpen(card);
   }
 
   function handleCardClick(card) {
@@ -66,11 +75,65 @@ function App() {
       });
   }
 
+  function handleUpdateUser({ name, about }) {
+    setIsLoading(true);
+    api.updateUserInfo(name, about)
+      .then(({ name, about, avatar, _id }) => {
+        setCurrentUser({ name, about, avatar, _id });
+        closeAllPopups();
+      })
+      .catch(err => {
+        console.error(`Не удалось обновить данные профиля. ${err}`);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
+  function handleUpdateAvatar({ avatar }) {
+    setIsLoading(true);
+    setIsLoadingAvatar(true);
+    api.updateUserAvatar(avatar)
+      .then(({ name, about, avatar, _id }) => {
+        setCurrentUser({ name, about, avatar, _id });
+        closeAllPopups();
+      })
+      .catch(err => {
+        console.error(`Не удалось обновить аватар. ${err}`);
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setIsLoadingAvatar(false);
+      });
+  }
+
+  function handleAddPlaceSubmit({ name, link }) {
+    setIsLoading(true);
+    api.addNewCard(name, link)
+      .then((newCard) => {
+        setCards([newCard, ...cards]);
+        closeAllPopups();
+      })
+      .catch(err => {
+        console.error(`Не удалось добавить изображение. ${err}`);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
+  function handleCloseOnOverlayClick(e) {
+    if (e.target.classList.contains('popup_opened')) {
+      closeAllPopups();
+    }
+  }
+
   function closeAllPopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setSelectedCard(null);
+    setIsConfirmPopupOpen(null);
   }
 
   return (
@@ -84,65 +147,48 @@ function App() {
           cards={cards}
           onCardClick={handleCardClick}
           onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
+          onCardDelete={handleConfirmClick}
+          isLoadingAvatar={isLoadingAvatar}
         />
         <Footer />
 
-        <PopupWithForm
-          title="Обновить аватар"
-          name="avatar"
-          btnText="Сохранить"
+        <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
-        >
-          <label className="popup__label">
-            <input type="url" name="avatar" id="link-avatar" className="popup__input popup__input_el_url-avatar"
-              placeholder="Ссылка на картинку" required />
-            <span className="popup__input-error link-avatar-error"></span>
-          </label>
-        </PopupWithForm>
+          onUpdateAvatar={handleUpdateAvatar}
+          isLoading={isLoading}
+          onCloseOverlay={handleCloseOnOverlayClick}
+        />
 
-        <PopupWithForm
-          title="Редактировать профиль"
-          name="profile"
-          btnText="Сохранить"
+        <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
-        >
-          <label className="popup__label">
-            <input type="text" name="user-name" id="user-input" className="popup__input popup__input_el_name" minLength="2"
-              maxLength="40" placeholder="Имя" required />
-            <span className="popup__input-error user-input-error"></span>
-          </label>
-          <label className="popup__label">
-            <input type="text" name="about" id="about-input" className="popup__input popup__input_el_about" minLength="2"
-              maxLength="200" placeholder="О себе" required />
-            <span className="popup__input-error about-input-error"></span>
-          </label>
-        </PopupWithForm>
+          onUpdateUser={handleUpdateUser}
+          isLoading={isLoading}
+          onCloseOverlay={handleCloseOnOverlayClick}
+        />
 
-        <PopupWithForm
-          title="Новое место"
-          name="place"
-          btnText="Создать"
+        <AddPlacePopup
           isOpen={isAddPlacePopupOpen}
           onClose={closeAllPopups}
-        >
-          <label className="popup__label">
-            <input type="text" name="place-name" id="place-input" className="popup__input popup__input_el_name-place"
-              minLength="2" maxLength="30" placeholder="Название" required />
-            <span className="popup__input-error place-input-error"></span>
-          </label>
-          <label className="popup__label">
-            <input type="url" name="link" id="link-place" className="popup__input popup__input_el_url-place"
-              placeholder="Ссылка на картинку" required />
-            <span className="popup__input-error link-place-error"></span>
-          </label>
-        </PopupWithForm>
+          onAddPlace={handleAddPlaceSubmit}
+          isLoading={isLoading}
+          onCloseOverlay={handleCloseOnOverlayClick}
+        />
 
-        <PopupWithForm title="Вы уверены?" name="confirmation" btnText="Да" isOpen={false} onClose={closeAllPopups} />
+        <ConfirmPopup
+          card={isConfirmPopupOpen}
+          isOpen={isConfirmPopupOpen}
+          onClose={closeAllPopups}
+          onCardDelete={handleCardDelete}
+          onCloseOverlay={handleCloseOnOverlayClick}
+        />
 
-        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <ImagePopup
+          card={selectedCard}
+          onClose={closeAllPopups}
+          onCloseOverlay={handleCloseOnOverlayClick}
+        />
       </CurrentUserContext.Provider>
     </div>
   );

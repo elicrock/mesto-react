@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import Card from "./Card";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import loader from "../images/loader.gif"
 
-function Main({ onEditAvatar, onEditProfile, onAddPlace, cards, onCardClick, onCardLike, onCardDelete }) {
+function Main({ onEditAvatar, onEditProfile, onAddPlace, cards, onCardClick, onCardLike, onCardDelete, isLoadingAvatar }) {
 
   const currentUser = useContext(CurrentUserContext);
 
@@ -10,7 +11,7 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace, cards, onCardClick, onC
     <main className="content">
       <section className="profile">
         <button className="profile__avatar-button" type="button" onClick={onEditAvatar}>
-          <img src={currentUser.avatar} alt="Аватар профиля" className="profile__avatar" />
+          <img src={isLoadingAvatar ? loader : currentUser.avatar} alt="Аватар профиля" className="profile__avatar" />
         </button>
         <div className="profile__info">
           <h1 className="profile__title">{currentUser.name}</h1>
