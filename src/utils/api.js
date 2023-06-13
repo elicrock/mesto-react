@@ -13,16 +13,18 @@ class Api {
     return Promise.reject(`Ошибка: ${res.status}`);
   }
 
+  _request(url, options) {
+    return fetch(url, options).then(this._resStatus)
+  }
+
   getUserInfo() {
-    return fetch(`${this._baseUrl}/users/me`, {
+    return this._request(`${this._baseUrl}/users/me`, {
       headers: this._headers,
     })
-      .then(res => this._resStatus(res))
-      .catch(err => console.error(err))
   }
 
   updateUserInfo(name, about) {
-    return fetch(`${this._baseUrl}/users/me`, {
+    return this._request(`${this._baseUrl}/users/me`, {
       method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify({
@@ -30,32 +32,26 @@ class Api {
         about: about
       })
     })
-      .then(res => this._resStatus(res))
-      .catch(err => console.error(err))
   }
 
   updateUserAvatar(avatar) {
-    return fetch(`${this._baseUrl}/users/me/avatar`, {
+    return this._request(`${this._baseUrl}/users/me/avatar`, {
       method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify({
         avatar: avatar
       })
     })
-      .then(res => this._resStatus(res))
-      .catch(err => console.error(err))
   }
 
   getInitialCards() {
-    return fetch(`${this._baseUrl}/cards`, {
+    return this._request(`${this._baseUrl}/cards`, {
       headers: this._headers,
     })
-      .then(res => this._resStatus(res))
-      .catch(err => console.error(err))
   }
 
   addNewCard(name, link) {
-    return fetch(`${this._baseUrl}/cards`, {
+    return this._request(`${this._baseUrl}/cards`, {
       method: 'POST',
       headers: this._headers,
       body: JSON.stringify({
@@ -63,26 +59,20 @@ class Api {
         link: link
       })
     })
-      .then(res => this._resStatus(res))
-      .catch(err => console.error(err))
   }
 
   deleteCard(cardId) {
-    return fetch(`${this._baseUrl}/cards/${cardId}`, {
+    return this._request(`${this._baseUrl}/cards/${cardId}`, {
       method: 'DELETE',
       headers: this._headers,
     })
-      .then(res => this._resStatus(res))
-      .catch(err => console.error(err))
   }
 
   changeLikeCardStatus(cardId, isLiked) {
-    return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
+    return this._request(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: `${isLiked ? 'DELETE' : 'PUT'}`,
       headers: this._headers,
     })
-    .then(res => this._resStatus(res))
-    .catch(err => console.error(err))
   }
 }
 

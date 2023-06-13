@@ -1,33 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
+import { usePopupClose } from "../hooks/usePopupClose";
 
-function PopupWithForm({ title, name, btnText, children, isOpen, onClose, onSubmit, onCloseOverlay }) {
+function PopupWithForm({ title, name, btnText, children, isOpen, onClose, onSubmit, buttonStyles="" }) {
 
-  function btnClass(btnText) {
-    if (btnText === 'Да') {
-      return 'popup__save-button popup__confirmation-btn';
-    } else {
-      return 'popup__save-button';
-    }
-  }
-
-  function handleCloseByEsc(e) {
-    if (e.key === 'Escape') {
-      onClose();
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleCloseByEsc);
-
-    return () => {
-      document.removeEventListener('keydown', handleCloseByEsc);
-    }
-  })
+  usePopupClose(isOpen, onClose);
 
   return (
-    <div className={`popup popup_type_${name} ${isOpen ? 'popup_opened' : ''}`} onMouseDown={onCloseOverlay}>
+    <div className={`popup popup_type_${name} ${isOpen ? 'popup_opened' : ''}`}>
       <div className="popup__container">
-        <button className="popup__close-button" type="button" onClick={onClose}></button>
+        <button className="popup__close-button" type="button" onClick={onClose} />
         <h2 className="popup__title">{title}</h2>
         <form className="popup__form" name={name} onSubmit={onSubmit}>
           {children &&
@@ -35,7 +16,7 @@ function PopupWithForm({ title, name, btnText, children, isOpen, onClose, onSubm
               {children}
             </div>
           }
-          <button className={btnClass(btnText)} type="submit">{btnText}</button>
+          <button className={`popup__save-button ${buttonStyles}`} type="submit">{btnText}</button>
         </form>
       </div>
     </div>

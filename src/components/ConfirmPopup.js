@@ -1,17 +1,15 @@
 import React from "react";
 import PopupWithForm from "./PopupWithForm";
 
-function ConfirmPopup({ card, isOpen, onClose, onCardDelete, onCloseOverlay }) {
+function ConfirmPopup({ card, isOpen, onClose, onCardDelete }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-
     onCardDelete(card);
-    onClose();
   }
 
   return (
-    <PopupWithForm title="Вы уверены?" name="confirmation" btnText="Да" isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit} onCloseOverlay={onCloseOverlay} />
+    <PopupWithForm title="Вы уверены?" name="confirmation" btnText="Да" isOpen={isOpen} onClose={onClose} onSubmit={handleSubmit} buttonStyles="popup__confirmation-btn" />
   )
 }
 

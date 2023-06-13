@@ -20,7 +20,6 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingAvatar, setIsLoadingAvatar] = useState(false);
 
   useEffect(() => {
     Promise.all([api.getInitialCards(), api.getUserInfo()])
@@ -53,79 +52,52 @@ function App() {
     setSelectedCard(card);
   }
 
+  function handleSubmit(request) {
+    setIsLoading(true);
+    request()
+      .then(closeAllPopups)
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+  }
+
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
 
-    api.changeLikeCardStatus(card._id, isLiked)
-      .then((newCard) => {
-        setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-      })
-      .catch(err => {
-        console.error(`Не получается поставить или убрать like. ${err}`);
-      });
+    async function makeRequest() {
+      const newCard = await api.changeLikeCardStatus(card._id, isLiked);
+      setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+    }
+    handleSubmit(makeRequest);
   }
 
   function handleCardDelete(card) {
-    api.deleteCard(card._id)
-      .then(() => {
-        setCards((cards) => cards.filter((c) => c._id !== card._id));
-      })
-      .catch(err => {
-        console.error(`Карточка не удалена. ${err}`);
-      });
+    async function makeRequest() {
+      await api.deleteCard(card._id);
+      setCards((cards) => cards.filter((c) => c._id !== card._id));
+    }
+    handleSubmit(makeRequest);
   }
 
   function handleUpdateUser({ name, about }) {
-    setIsLoading(true);
-    api.updateUserInfo(name, about)
-      .then(({ name, about, avatar, _id }) => {
-        setCurrentUser({ name, about, avatar, _id });
-        closeAllPopups();
-      })
-      .catch(err => {
-        console.error(`Не удалось обновить данные профиля. ${err}`);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    function makeRequest() {
+      return api.updateUserInfo(name, about).then(setCurrentUser);
+    }
+    handleSubmit(makeRequest);
   }
 
   function handleUpdateAvatar({ avatar }) {
-    setIsLoading(true);
-    setIsLoadingAvatar(true);
-    api.updateUserAvatar(avatar)
-      .then(({ name, about, avatar, _id }) => {
-        setCurrentUser({ name, about, avatar, _id });
-        closeAllPopups();
-      })
-      .catch(err => {
-        console.error(`Не удалось обновить аватар. ${err}`);
-      })
-      .finally(() => {
-        setIsLoading(false);
-        setIsLoadingAvatar(false);
-      });
+    function makeRequest() {
+      return api.updateUserAvatar(avatar).then(setCurrentUser);
+    }
+    handleSubmit(makeRequest);
   }
 
   function handleAddPlaceSubmit({ name, link }) {
-    setIsLoading(true);
-    api.addNewCard(name, link)
-      .then((newCard) => {
-        setCards([newCard, ...cards]);
-        closeAllPopups();
-      })
-      .catch(err => {
-        console.error(`Не удалось добавить изображение. ${err}`);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }
-
-  function handleCloseOnOverlayClick(e) {
-    if (e.target.classList.contains('popup_opened')) {
-      closeAllPopups();
+    async function makeRequest() {
+      const newCard = await api.addNewCard(name, link);
+      setCards([newCard, ...cards]);
     }
+    handleSubmit(makeRequest);
   }
 
   function closeAllPopups() {
@@ -148,7 +120,6 @@ function App() {
           onCardClick={handleCardClick}
           onCardLike={handleCardLike}
           onCardDelete={handleConfirmClick}
-          isLoadingAvatar={isLoadingAvatar}
         />
         <Footer />
 
@@ -157,7 +128,6 @@ function App() {
           onClose={closeAllPopups}
           onUpdateAvatar={handleUpdateAvatar}
           isLoading={isLoading}
-          onCloseOverlay={handleCloseOnOverlayClick}
         />
 
         <EditProfilePopup
@@ -165,7 +135,6 @@ function App() {
           onClose={closeAllPopups}
           onUpdateUser={handleUpdateUser}
           isLoading={isLoading}
-          onCloseOverlay={handleCloseOnOverlayClick}
         />
 
         <AddPlacePopup
@@ -173,7 +142,6 @@ function App() {
           onClose={closeAllPopups}
           onAddPlace={handleAddPlaceSubmit}
           isLoading={isLoading}
-          onCloseOverlay={handleCloseOnOverlayClick}
         />
 
         <ConfirmPopup
@@ -181,13 +149,11 @@ function App() {
           isOpen={isConfirmPopupOpen}
           onClose={closeAllPopups}
           onCardDelete={handleCardDelete}
-          onCloseOverlay={handleCloseOnOverlayClick}
         />
 
         <ImagePopup
           card={selectedCard}
           onClose={closeAllPopups}
-          onCloseOverlay={handleCloseOnOverlayClick}
         />
       </CurrentUserContext.Provider>
     </div>

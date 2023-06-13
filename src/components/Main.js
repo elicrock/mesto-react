@@ -1,9 +1,8 @@
 import React, { useContext } from "react";
 import Card from "./Card";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import loader from "../images/loader.gif"
 
-function Main({ onEditAvatar, onEditProfile, onAddPlace, cards, onCardClick, onCardLike, onCardDelete, isLoadingAvatar }) {
+function Main({ onEditAvatar, onEditProfile, onAddPlace, cards, onCardClick, onCardLike, onCardDelete }) {
 
   const currentUser = useContext(CurrentUserContext);
 
@@ -11,7 +10,7 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace, cards, onCardClick, onC
     <main className="content">
       <section className="profile">
         <button className="profile__avatar-button" type="button" onClick={onEditAvatar}>
-          <img src={isLoadingAvatar ? loader : currentUser.avatar} alt="Аватар профиля" className="profile__avatar" />
+          <img src={currentUser.avatar} alt="Аватар профиля" className="profile__avatar" />
         </button>
         <div className="profile__info">
           <h1 className="profile__title">{currentUser.name}</h1>
@@ -29,13 +28,15 @@ function Main({ onEditAvatar, onEditProfile, onAddPlace, cards, onCardClick, onC
       <section className="elements">
         <ul className="elements__list">
           {
-            cards.map((card) => (<Card
-              key={card._id}
-              card={card}
-              onCardClick={onCardClick}
-              onCardLike={onCardLike}
-              onCardDelete={onCardDelete}
-            />))
+            cards.map((card) => (
+              <Card
+                key={card._id}
+                card={card}
+                onCardClick={onCardClick}
+                onCardLike={onCardLike}
+                onCardDelete={onCardDelete}
+              />
+            ))
           }
         </ul>
       </section>

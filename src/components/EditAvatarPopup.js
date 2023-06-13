@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import PopupWithForm from "./PopupWithForm";
 
-function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, isLoading, onCloseOverlay }) {
+function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, isLoading }) {
 
   const avatarRef = useRef();
 
@@ -27,7 +27,6 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, isLoading, onCloseOv
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit}
-      onCloseOverlay={onCloseOverlay}
     >
       <label className="popup__label">
         <input ref={avatarRef} type="url" name="avatar" id="link-avatar" className="popup__input popup__input_el_url-avatar" placeholder="Ссылка на картинку" required />
