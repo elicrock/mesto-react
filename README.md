@@ -39,7 +39,7 @@
 ## Ссылки проекта:
 * [Ссылка на макет в Figma](https://www.figma.com/file/bjyvbKKJN2naO0ucURl2Z0/JavaScript.-Sprint-5?node-id=0%3A1)
 * [Проект на GitHub](https://github.com/elicrock/mesto-react)
-* [Сайт на GitHub Pages](elicrock.github.io/mesto-react/)
+* [Сайт на GitHub Pages](elicrock.github.io/mesto-react)
 
 ---
 
@@ -47,6 +47,6 @@
 <details>
 <summary>Показать</summary>
 
-[![Mesto](https://user-images.githubusercontent.com/51034216/218524494-78f3ada9-b759-420f-8917-793cab3ab725.png)](elicrock.github.io/mesto-react/)
+[![Mesto](https://user-images.githubusercontent.com/51034216/218524494-78f3ada9-b759-420f-8917-793cab3ab725.png)](elicrock.github.io/mesto-react)
 
 </details>
